@@ -14,9 +14,9 @@ jobs:
 # Service container Mysql mysql
     strategy:
       matrix:
-        laravel: ['8']
+        laravel: ['8.*']
         operating-system: [ubuntu-latest]
-        php-versions: [ '8.*' ]
+        php-versions: [ '8.0' ]
         dependency-stability: [ 'prefer-none' ]
 
     name: P${{ matrix.php-versions }} - L${{ matrix.laravel }} - ${{ matrix.dependency-stability }} - ${{ matrix.operating-system}}
@@ -38,9 +38,9 @@ jobs:
       run: npm ci
     - name: Build frontend
       run: npm run prod
-    - name: Fetch built assets from Artifacts
-      uses: actions/download-artifact@v1
-      with:
-        name: assets
-        path: public  
+      - name: Fetch built assets from Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: assets
+          path: public  
 # Code quality
