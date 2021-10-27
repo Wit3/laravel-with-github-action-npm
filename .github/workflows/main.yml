@@ -5,8 +5,6 @@ on:
   push:
     branches:
       - main
-      - develop
-      - features/**
 
 jobs:
   laravel-tests:
@@ -42,8 +40,8 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git checkout -B deploy
+        git checkout -B main
         git add -f public/
         git commit -m "Build front-end assets"
-        git push -f origin deploy
+        git push -f origin main
 # Code quality
