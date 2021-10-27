@@ -39,8 +39,8 @@ jobs:
     - name: Build frontend
       run: npm run prod
     - name: Fetch built assets from Artifacts
-        uses: actions/download-artifact@v1
-        with:
-          name: assets
-          path: public  
+      uses: actions/download-artifact@v1
+      with:
+        name: assets
+        path: public  
 # Code quality
