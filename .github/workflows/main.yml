@@ -1,0 +1,40 @@
+# GithHub Actions Workflow generated with Ghygen
+# Original configuration: https://ghygen.hi-folks.dev?code=6d018ec0ad73450353b366e392888f6c
+name: Test Laravel Github action
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - features/**
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+# Service container Mysql mysql
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest]
+        php-versions: [ '8.0' ]
+        dependency-stability: [ 'prefer-none' ]
+
+    name: P${{ matrix.php-versions }} - L${{ matrix.laravel }} - ${{ matrix.dependency-stability }} - ${{ matrix.operating-system}}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '16.x'
+    - name: Cache node_modules directory
+      uses: actions/cache@v2
+      id: node_modules-cache
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install NPM packages
+      if: steps.node_modules-cache.outputs.cache-hit != 'true'
+      run: npm ci
+    - name: Build frontend
+      run: npm run prod
+# Code quality
