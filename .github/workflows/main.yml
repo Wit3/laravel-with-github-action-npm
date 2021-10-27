@@ -1,46 +1,34 @@
-# GithHub Actions Workflow generated with Ghygen
-# Original configuration: https://ghygen.hi-folks.dev?code=6d018ec0ad73450353b366e392888f6c
-name: Laravel Frontend Assets
+name: CI-CD
+
 on:
   push:
-    branches:
-      - main
-      - develop
-      - features/**
+    branches: main
 
 jobs:
-  laravel-tests:
+  build-js:
+    name: Build Js/Css
     runs-on: ubuntu-latest
-# Service container Mysql mysql
-    strategy:
-      matrix:
-        laravel: ['8.*']
-        operating-system: [ubuntu-latest]
-        php-versions: [ '8.0' ]
-        dependency-stability: [ 'prefer-none' ]
-
-    name: P${{ matrix.php-versions }} - L${{ matrix.laravel }} - ${{ matrix.dependency-stability }} - ${{ matrix.operating-system}}
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: '16.x'
-    - name: Cache node_modules directory
-      uses: actions/cache@v2
-      id: node_modules-cache
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/package-lock.json') }}
-    - name: Install NPM packages
-      if: steps.node_modules-cache.outputs.cache-hit != 'true'
-      run: npm ci
-    - name: Build frontend
-      run: npm run prod
-    - name: Upload build files
+      - uses: actions/checkout@v1
+      - name: Yarn Build
+        run: |
+          yarn install
+          yarn prod
+          cat public/mix-manifest.json # See asset versions in log
+      - name: Upload build files
         uses: actions/upload-artifact@v1
         with:
           name: assets
           path: public
-# Code quality
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-js]
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Download build assets
+        uses: actions/download-artifact@v1
+        with:
+          name: assets
+          path: public
