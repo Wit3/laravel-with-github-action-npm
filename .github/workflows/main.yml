@@ -1,6 +1,6 @@
 # GithHub Actions Workflow generated with Ghygen
 # Original configuration: https://ghygen.hi-folks.dev?code=6d018ec0ad73450353b366e392888f6c
-name: Test Laravel Github action
+name: Laravel Frontend Assets
 on:
   push:
     branches:
@@ -14,8 +14,9 @@ jobs:
 # Service container Mysql mysql
     strategy:
       matrix:
+        laravel: ['8']
         operating-system: [ubuntu-latest]
-        php-versions: [ '8.0' ]
+        php-versions: [ '8.*' ]
         dependency-stability: [ 'prefer-none' ]
 
     name: P${{ matrix.php-versions }} - L${{ matrix.laravel }} - ${{ matrix.dependency-stability }} - ${{ matrix.operating-system}}
@@ -37,4 +38,9 @@ jobs:
       run: npm ci
     - name: Build frontend
       run: npm run prod
+    - name: Fetch built assets from Artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: assets
+          path: public  
 # Code quality
